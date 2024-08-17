@@ -3,49 +3,89 @@
     <div class="tk-row">
       <tk-avatar :config="config" :mail="mail" :nick="nick" />
       <div class="tk-col">
-        <tk-meta-input :nick="nick" :mail="mail" :link="link" @update="onMetaUpdate" :config="config" />
-        <el-input class="tk-input"
-            type="textarea"
-            ref="textarea"
-            v-model="comment"
-            show-word-limit
-            :placeholder="commentPlaceholder"
-            :autosize="{ minRows: 3 }"
-            :maxlength="maxLength"
-            @input="onCommentInput"
-            @keyup.enter.native="onEnterKeyUp($event)" />
+        <el-input
+          class="tk-input"
+          type="textarea"
+          ref="textarea"
+          v-model="comment"
+          show-word-limit
+          :placeholder="commentPlaceholder"
+          :autosize="{ minRows: 3 }"
+          :maxlength="maxLength"
+          textareaStyle="min-height: 130px"
+          @input="onCommentInput"
+          @keyup.enter.native="onEnterKeyUp($event)"
+        />
+        <tk-meta-input
+          :nick="nick"
+          :mail="mail"
+          :link="link"
+          @update="onMetaUpdate"
+          :config="config"
+        />
       </div>
     </div>
     <div class="tk-row actions">
       <div class="tk-row-actions-start">
-        <div class="tk-submit-action-icon OwO" v-show="config.SHOW_EMOTION === 'true'" v-html="iconEmotion" v-clickoutside="closeOwo" ref="owo"></div>
-        <div class="tk-submit-action-icon" v-show="config.SHOW_IMAGE === 'true'" v-html="iconImage" @click="openSelectImage"></div>
-        <input class="tk-input-image" type="file" accept="image/*" value="" ref="inputFile" @change="onSelectImage" />
+        <div
+          class="tk-submit-action-icon OwO"
+          v-show="config.SHOW_EMOTION === 'true'"
+          v-html="iconEmotion"
+          v-clickoutside="closeOwo"
+          ref="owo"
+        ></div>
+        <div
+          class="tk-submit-action-icon"
+          v-show="config.SHOW_IMAGE === 'true'"
+          v-html="iconImage"
+          @click="openSelectImage"
+        ></div>
+        <input
+          class="tk-input-image"
+          type="file"
+          accept="image/*"
+          value=""
+          ref="inputFile"
+          @change="onSelectImage"
+        />
         <div class="tk-error-message">{{ errorMessage }}</div>
       </div>
-      <a class="tk-submit-action-icon __markdown"
-          alt="Markdown is supported"
-          href="https://guides.github.com/features/mastering-markdown/"
-          target="_blank"
-          rel="noopener noreferrer"
-          v-html="iconMarkdown"></a>
-      <el-button class="tk-cancel"
-          v-if="!!replyId"
-          size="small"
-          @click="cancel">{{ t('SUBMIT_CANCEL') }}</el-button>
-      <el-button class="tk-preview"
-          size="small"
-          @click="preview">{{ t('SUBMIT_PREVIEW') }}</el-button>
-      <el-button class="tk-send"
-          type="primary"
-          size="small"
-          :disabled="!canSend"
-          @click="send">{{ isSending ? t('SUBMIT_SENDING') : t('SUBMIT_SEND') }}</el-button>
+      <!-- <a
+        class="tk-submit-action-icon __markdown"
+        alt="Markdown is supported"
+        href="https://guides.github.com/features/mastering-markdown/"
+        target="_blank"
+        rel="noopener noreferrer"
+        v-html="iconMarkdown"
+      ></a> -->
+      <!-- <el-button
+        class="tk-cancel"
+        v-if="!!replyId"
+        size="small"
+        @click="cancel"
+        >{{ t("SUBMIT_CANCEL") }}</el-button
+      >
+      <el-button class="tk-preview" size="small" @click="preview">{{
+        t("SUBMIT_PREVIEW")
+      }}</el-button> -->
+      <el-button
+        class="tk-send"
+        type="primary"
+        size="small"
+        :disabled="!canSend"
+        @click="send"
+        >{{ isSending ? t("SUBMIT_SENDING") : t("SUBMIT_SEND") }}</el-button
+      >
       <div class="tk-turnstile-container" ref="turnstile-container">
         <div class="tk-turnstile" ref="turnstile"></div>
       </div>
     </div>
-    <div class="tk-preview-container" v-if="isPreviewing" v-html="commentHtml" ref="comment-preview"></div>
+    <div
+      class="tk-preview-container"
+      v-if="isPreviewing"
+      v-html="commentHtml"
+      ref="comment-preview"
+    ></div>
   </div>
 </template>
 
@@ -56,7 +96,21 @@ import iconImage from '@fortawesome/fontawesome-free/svgs/regular/image.svg'
 import Clickoutside from 'element-ui/src/utils/clickoutside'
 import TkAvatar from './TkAvatar.vue'
 import TkMetaInput from './TkMetaInput.vue'
-import { marked, call, logger, renderLinks, renderMath, renderCode, initOwoEmotions, initMarkedOwo, t, getUrl, getHref, blobToDataURL, getUserAgent } from '../../utils'
+import {
+  marked,
+  call,
+  logger,
+  renderLinks,
+  renderMath,
+  renderCode,
+  initOwoEmotions,
+  initMarkedOwo,
+  t,
+  getUrl,
+  getHref,
+  blobToDataURL,
+  getUserAgent
+} from '../../utils'
 import OwO from '../../lib/owo'
 
 const imageTypes = [
@@ -105,15 +159,14 @@ export default {
   },
   computed: {
     canSend () {
-      return !this.isSending &&
-        !!this.isMetaValid &&
-        !!this.comment.trim()
+      return !this.isSending && !!this.isMetaValid && !!this.comment.trim()
     },
     textarea () {
       return this.$refs.textarea ? this.$refs.textarea.$refs.textarea : null
     },
     commentPlaceholder () {
-      let ph = this.$twikoo.placeholder || this.config.COMMENT_PLACEHOLDER || ''
+      let ph =
+        this.$twikoo.placeholder || this.config.COMMENT_PLACEHOLDER || ''
       ph = ph.replace(/<br>/g, '\n')
       return ph
     },
@@ -136,7 +189,9 @@ export default {
     },
     async initOwo () {
       if (this.config.SHOW_EMOTION === 'true') {
-        const odata = await initOwoEmotions(this.config.EMOTION_CDN || 'https://owo.imaegoo.com/owo.json')
+        const odata = await initOwoEmotions(
+          this.config.EMOTION_CDN || 'https://owo.imaegoo.com/owo.json'
+        )
         this.owo = new OwO({
           logo: iconEmotion, // OwO button text, default: `OωO表情`
           container: this.$refs.owo, // OwO container, default: `document.getElementsByClassName('OwO')[0]`
@@ -156,7 +211,8 @@ export default {
       }
       this.turnstileLoad = new Promise((resolve, reject) => {
         const scriptEl = document.createElement('script')
-        scriptEl.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
+        scriptEl.src =
+          'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
         scriptEl.onload = resolve
         scriptEl.onerror = reject
         this.$refs['turnstile-container'].appendChild(scriptEl)
@@ -202,7 +258,11 @@ export default {
           renderLinks(this.$refs['comment-preview'])
           renderMath(this.$refs['comment-preview'], this.$twikoo.katex)
           if (this.config.HIGHLIGHT === 'true') {
-            renderCode(this.$refs['comment-preview'], this.config.HIGHLIGHT_THEME, this.config.HIGHLIGHT_PLUGIN)
+            renderCode(
+              this.$refs['comment-preview'],
+              this.config.HIGHLIGHT_THEME,
+              this.config.HIGHLIGHT_PLUGIN
+            )
           }
         })
       }
@@ -210,7 +270,11 @@ export default {
     async send () {
       this.isSending = true
       try {
-        if (this.comment.match(new RegExp(`!\\[${t('IMAGE_UPLOAD_PLACEHOLDER')}.+\\]\\(\\)`))) {
+        if (
+          this.comment.match(
+            new RegExp(`!\\[${t('IMAGE_UPLOAD_PLACEHOLDER')}.+\\]\\(\\)`)
+          )
+        ) {
           throw new Error(t('IMAGE_UPLOAD_PLEASE_WAIT'))
         }
         const comment = {
@@ -250,7 +314,9 @@ export default {
     },
     onBgImgChange () {
       if (this.config.COMMENT_BG_IMG && this.textarea) {
-        this.textarea.style['background-image'] = `url("${this.config.COMMENT_BG_IMG}")`
+        this.textarea.style[
+          'background-image'
+        ] = `url("${this.config.COMMENT_BG_IMG}")`
       }
     },
     onEnterKeyUp (event) {
@@ -277,7 +343,10 @@ export default {
       let photo
       if (e.clipboardData.files[0]) {
         photo = e.clipboardData.files[0]
-      } else if (e.clipboardData.items[0] && e.clipboardData.items[0].getAsFile()) {
+      } else if (
+        e.clipboardData.items[0] &&
+        e.clipboardData.items[0].getAsFile()
+      ) {
         photo = e.clipboardData.items[0].getAsFile()
       }
       this.parseAndUploadPhoto(photo)
@@ -297,7 +366,11 @@ export default {
       } else if (imageCdn) {
         this.uploadPhotoToThirdParty(fileIndex, fileName, fileType, photo)
       } else {
-        this.uploadFailed(fileIndex, fileType, t('IMAGE_UPLOAD_FAILED_NO_CONF'))
+        this.uploadFailed(
+          fileIndex,
+          fileType,
+          t('IMAGE_UPLOAD_FAILED_NO_CONF')
+        )
       }
     },
     getUserId () {
@@ -314,7 +387,9 @@ export default {
           filePath: photo
         })
         if (uploadResult.fileID) {
-          const tempUrlResult = await this.$tcb.app.getTempFileURL({ fileList: [uploadResult.fileID] })
+          const tempUrlResult = await this.$tcb.app.getTempFileURL({
+            fileList: [uploadResult.fileID]
+          })
           const tempFileUrl = tempUrlResult.fileList[0].tempFileURL
           this.uploadCompleted(fileIndex, fileName, fileType, tempFileUrl)
         }
@@ -331,11 +406,26 @@ export default {
           photo: await blobToDataURL(photo)
         })
         if (uploadResult.data) {
-          this.uploadCompleted(fileIndex, fileName, fileType, uploadResult.data.url)
-        } else if (uploadResult.code === 1040 && uploadResult.err &&
-          (smmsImageDuplicateCheck = uploadResult.err.match(/this image exists at: (http[^ ]+)/))) {
+          this.uploadCompleted(
+            fileIndex,
+            fileName,
+            fileType,
+            uploadResult.data.url
+          )
+        } else if (
+          uploadResult.code === 1040 &&
+          uploadResult.err &&
+          (smmsImageDuplicateCheck = uploadResult.err.match(
+            /this image exists at: (http[^ ]+)/
+          ))
+        ) {
           console.warn(uploadResult)
-          this.uploadCompleted(fileIndex, fileName, fileType, smmsImageDuplicateCheck[1])
+          this.uploadCompleted(
+            fileIndex,
+            fileName,
+            fileType,
+            smmsImageDuplicateCheck[1]
+          )
         } else {
           console.error(uploadResult)
           this.uploadFailed(fileIndex, fileType, uploadResult.err)
@@ -347,20 +437,32 @@ export default {
     },
     uploadCompleted (fileIndex, fileName, fileType, fileUrl) {
       fileName = fileName.replace(/[[\]]/g, '_')
-      this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `![${fileName}](${fileUrl})`)
+      this.comment = this.comment.replace(
+        this.getImagePlaceholder(fileIndex, fileType),
+        `![${fileName}](${fileUrl})`
+      )
       this.$refs.inputFile.value = ''
     },
     uploadFailed (fileIndex, fileType, reason) {
-      this.comment = this.comment.replace(this.getImagePlaceholder(fileIndex, fileType), `_${t('IMAGE_UPLOAD_FAILED')}: ${reason}_`)
+      this.comment = this.comment.replace(
+        this.getImagePlaceholder(fileIndex, fileType),
+        `_${t('IMAGE_UPLOAD_FAILED')}: ${reason}_`
+      )
       this.$refs.inputFile.value = ''
     },
     paste (text) {
       if (document.selection) {
         document.selection.createRange().text = text
-      } else if (this.textarea.selectionStart || this.textarea.selectionStart === 0) {
+      } else if (
+        this.textarea.selectionStart ||
+        this.textarea.selectionStart === 0
+      ) {
         const n = this.textarea.selectionStart
         const r = this.textarea.selectionEnd
-        this.comment = this.comment.substring(0, n) + text + this.comment.substring(r, this.comment.length)
+        this.comment =
+          this.comment.substring(0, n) +
+          text +
+          this.comment.substring(r, this.comment.length)
         this.textarea.selectionStart = n + text.length
         this.textarea.selectionEnd = n + text.length
       } else {
@@ -413,7 +515,7 @@ export default {
   flex-direction: column;
 }
 .tk-meta-input {
-  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
 }
 .tk-row.actions {
   position: relative;
@@ -455,6 +557,7 @@ export default {
 .tk-input {
   flex: 1;
 }
+
 .tk-input .el-textarea__inner {
   background-position: right bottom;
   background-repeat: no-repeat;
@@ -473,20 +576,20 @@ export default {
   margin-left: 3rem;
   margin-bottom: 1rem;
   padding: 5px 15px;
-  border: 1px solid rgba(128,128,128,0.31);
+  border: 1px solid rgba(128, 128, 128, 0.31);
   border-radius: 4px;
   word-break: break-word;
 }
 .tk-fade-in {
-  animation: tkFadeIn .3s;
+  animation: tkFadeIn 0.3s;
 }
 @keyframes tkFadeIn {
   0% {
-    opacity: 0
+    opacity: 0;
   }
 
   to {
-    opacity: 1
+    opacity: 1;
   }
 }
 </style>

@@ -1,69 +1,133 @@
 <template>
   <div class="tk-admin-comment" v-loading="loading">
     <div class="tk-admin-warn" v-if="clientVersion !== serverVersion">
-      <span>{{ t('ADMIN_CLIENT_VERSION') }}{{ clientVersion }}，</span>
-      <span>{{ t('ADMIN_SERVER_VERSION') }}{{ serverVersion }}，</span>
-      <span>请参考&nbsp;<a href="https://twikoo.js.org/update.html" target="_blank">版本更新</a>&nbsp;进行升级</span>
+      <span>{{ t("ADMIN_CLIENT_VERSION") }}{{ clientVersion }}，</span>
+      <span>{{ t("ADMIN_SERVER_VERSION") }}{{ serverVersion }}，</span>
+      <span
+        >请参考&nbsp;<a href="https://twikoo.js.org/update.html" target="_blank"
+          >版本更新</a
+        >&nbsp;进行升级</span
+      >
     </div>
     <div class="tk-admin-comment-filter">
       <el-input
-          class="tk-admin-comment-filter-keyword"
-          size="small"
-          v-model="filter.keyword"
-          :placeholder="t('ADMIN_COMMENT_SEARCH_PLACEHOLDER')"
-          @keyup.enter.native="getComments" />
+        class="tk-admin-comment-filter-keyword"
+        size="small"
+        v-model="filter.keyword"
+        :placeholder="t('ADMIN_COMMENT_SEARCH_PLACEHOLDER')"
+        @keyup.enter.native="getComments"
+      />
       <select class="tk-admin-comment-filter-type" v-model="filter.type">
-        <option value="">{{ t('ADMIN_COMMENT_FILTER_ALL') }}</option>
-        <option value="VISIBLE">{{ t('ADMIN_COMMENT_FILTER_VISIBLE') }}</option>
-        <option value="HIDDEN">{{ t('ADMIN_COMMENT_FILTER_HIDDEN') }}</option>
+        <option value="">{{ t("ADMIN_COMMENT_FILTER_ALL") }}</option>
+        <option value="VISIBLE">{{ t("ADMIN_COMMENT_FILTER_VISIBLE") }}</option>
+        <option value="HIDDEN">{{ t("ADMIN_COMMENT_FILTER_HIDDEN") }}</option>
       </select>
-      <el-button size="small" type="primary" @click="getComments">{{ t('ADMIN_COMMENT_SEARCH') }}</el-button>
+      <el-button size="small" type="primary" @click="getComments">{{
+        t("ADMIN_COMMENT_SEARCH")
+      }}</el-button>
     </div>
     <div class="tk-admin-comment-list" ref="comment-list">
-      <div class="tk-admin-comment-item" v-for="comment in comments" :key="comment._id">
+      <div
+        class="tk-admin-comment-item"
+        v-for="comment in comments"
+        :key="comment._id"
+      >
         <div class="tk-admin-comment-meta">
-          <tk-avatar :config="serverConfig" :avatar="comment.avatar" :nick="comment.nick" :mail="comment.mail" :link="comment.link" />
+          <tk-avatar
+            :config="serverConfig"
+            :avatar="comment.avatar"
+            :nick="comment.nick"
+            :mail="comment.mail"
+            :link="comment.link"
+          />
           <span v-if="!comment.link">{{ comment.nick }}&nbsp;</span>
-          <a v-if="comment.link" :href="convertLink(comment.link)" target="_blank">{{ comment.nick }}&nbsp;</a>
-          <span v-if="comment.mail">(<a :href="`mailto:${comment.mail}`">{{ comment.mail }}</a>)&nbsp;</span>
-          <span v-if="comment.isSpam">{{ t('ADMIN_COMMENT_IS_SPAM_SUFFIX') }}&nbsp;</span>
+          <a
+            v-if="comment.link"
+            :href="convertLink(comment.link)"
+            target="_blank"
+            >{{ comment.nick }}&nbsp;</a
+          >
+          <span v-if="comment.mail"
+            >(<a :href="`mailto:${comment.mail}`">{{ comment.mail }}</a
+            >)&nbsp;</span
+          >
+          <span v-if="comment.isSpam"
+            >{{ t("ADMIN_COMMENT_IS_SPAM_SUFFIX") }}&nbsp;</span
+          >
           <span class="tk-time">{{ displayCreated(comment) }}&nbsp;</span>
           <span :title="comment.ua">{{ comment.ipRegion }}</span>
         </div>
         <div class="tk-content" v-html="comment.comment" ref="comments"></div>
         <div class="tk-admin-actions">
-          <el-button size="mini" type="text" @click="handleView(comment)">{{ t('ADMIN_COMMENT_VIEW') }}</el-button>
-          <el-button size="mini" type="text" v-if="comment.isSpam" @click="handleSpam(comment, false)">{{ t('ADMIN_COMMENT_SHOW') }}</el-button>
-          <el-button size="mini" type="text" v-if="!comment.isSpam" @click="handleSpam(comment, true)">{{ t('ADMIN_COMMENT_HIDE') }}</el-button>
-          <el-button size="mini" type="text" v-if="!comment.rid && comment.top" @click="handleTop(comment, false)">{{ t('ADMIN_COMMENT_UNTOP') }}</el-button>
-          <el-button size="mini" type="text" v-if="!comment.rid && !comment.top" @click="handleTop(comment, true)">{{ t('ADMIN_COMMENT_TOP') }}</el-button>
-          <el-button size="mini" type="text" @click="handleDelete(comment)">{{ t('ADMIN_COMMENT_DELETE') }}</el-button>
+          <el-button size="mini" type="text" @click="handleView(comment)">{{
+            t("ADMIN_COMMENT_VIEW")
+          }}</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            v-if="comment.isSpam"
+            @click="handleSpam(comment, false)"
+            >{{ t("ADMIN_COMMENT_SHOW") }}</el-button
+          >
+          <el-button
+            size="mini"
+            type="text"
+            v-if="!comment.isSpam"
+            @click="handleSpam(comment, true)"
+            >{{ t("ADMIN_COMMENT_HIDE") }}</el-button
+          >
+          <el-button
+            size="mini"
+            type="text"
+            v-if="!comment.rid && comment.top"
+            @click="handleTop(comment, false)"
+            >{{ t("ADMIN_COMMENT_UNTOP") }}</el-button
+          >
+          <el-button
+            size="mini"
+            type="text"
+            v-if="!comment.rid && !comment.top"
+            @click="handleTop(comment, true)"
+            >{{ t("ADMIN_COMMENT_TOP") }}</el-button
+          >
+          <el-button size="mini" type="text" @click="handleDelete(comment)">{{
+            t("ADMIN_COMMENT_DELETE")
+          }}</el-button>
         </div>
       </div>
     </div>
     <tk-pagination
-        :page-size="pageSize"
-        :total="count"
-        @page-size-change="onPageSizeChange"
-        @current-change="switchPage" />
+      :page-size="pageSize"
+      :total="count"
+      @page-size-change="onPageSizeChange"
+      @current-change="switchPage"
+    />
   </div>
 </template>
 
 <script>
-import { app } from '../index'
-import { timeago, call, convertLink, renderLinks, renderMath, renderCode, t } from '../../utils'
-import { version } from '../../version'
-import TkAvatar from './TkAvatar.vue'
-import TkPagination from './TkPagination.vue'
+import { app } from "../index";
+import {
+  timeago,
+  call,
+  convertLink,
+  renderLinks,
+  renderMath,
+  renderCode,
+  t,
+} from "../../utils";
+import { version } from "../../version";
+import TkAvatar from "./TkAvatar.vue";
+import TkPagination from "./TkPagination.vue";
 
-const defaultPageSize = 5
+const defaultPageSize = 5;
 
 export default {
   components: {
     TkAvatar,
-    TkPagination
+    TkPagination,
   },
-  data () {
+  data() {
     return {
       loading: true,
       comments: [],
@@ -73,119 +137,120 @@ export default {
       count: 0,
       pageSize: defaultPageSize,
       currentPage: 1,
-      filter: { keyword: '', type: '' }
-    }
+      filter: { keyword: "", type: "" },
+    };
   },
   methods: {
     t,
-    displayCreated (comment) {
-      return timeago(comment.created)
+    displayCreated(comment) {
+      return timeago(comment.created);
     },
-    convertLink (link) {
-      return convertLink(link)
+    convertLink(link) {
+      return convertLink(link);
     },
-    async getComments () {
-      this.loading = true
-      const res = await call(this.$tcb, 'COMMENT_GET_FOR_ADMIN', {
+    async getComments() {
+      this.loading = true;
+      const res = await call(this.$tcb, "COMMENT_GET_FOR_ADMIN", {
         per: this.pageSize,
         page: this.currentPage,
         keyword: this.filter.keyword,
-        type: this.filter.type
-      })
+        type: this.filter.type,
+      });
       if (res.result && !res.result.code) {
-        this.count = res.result.count
-        this.comments = res.result.data
+        this.count = res.result.count;
+        this.comments = res.result.data;
       }
       this.$nextTick(() => {
-        renderLinks(this.$refs.comments)
-        renderMath(this.$refs['comment-list'], this.$twikoo.katex)
-        this.highlightCode()
-      })
-      this.loading = false
+        renderLinks(this.$refs.comments);
+        renderMath(this.$refs["comment-list"], this.$twikoo.katex);
+        this.highlightCode();
+      });
+      this.loading = false;
     },
-    async getConfig () {
-      const res = await call(this.$tcb, 'GET_CONFIG_FOR_ADMIN')
+    async getConfig() {
+      const res = await call(this.$tcb, "GET_CONFIG_FOR_ADMIN");
       if (res.result && !res.result.code) {
-        this.serverConfig = res.result.config
-        this.checkConfig()
+        this.serverConfig = res.result.config;
+        this.checkConfig();
       }
     },
-    checkConfig () {
-      if (!this.serverConfig.HIGHLIGHT) this.serverConfig.HIGHLIGHT = 'true'
+    checkConfig() {
+      if (!this.serverConfig.HIGHLIGHT) this.serverConfig.HIGHLIGHT = "true";
       // 在已登錄的情況下，不用再輸入昵稱和郵箱等信息
-      let metaData = {}
-      const mStr = localStorage.getItem('twikoo')
+      let metaData = {};
+      const mStr = localStorage.getItem("twikoo");
       if (mStr) {
-        metaData = JSON.parse(mStr)
+        metaData = JSON.parse(mStr);
       }
-      ['nick', 'mail', 'avatar'].forEach(key => {
+      ["nick", "mail", "avatar"].forEach((key) => {
         if (!metaData[key]) {
-          this.serverConfig[key] = ''
+          this.serverConfig[key] = "";
         } else {
-          this.serverConfig[key] = metaData[key]
+          this.serverConfig[key] = metaData[key];
         }
-      })
+      });
       if (!metaData.nick && this.serverConfig.BLOGGER_NICK) {
-        metaData.nick = this.serverConfig.BLOGGER_NICK
+        metaData.nick = this.serverConfig.BLOGGER_NICK;
       }
       if (!metaData.mail && this.serverConfig.BLOGGER_EMAIL) {
-        metaData.mail = this.serverConfig.BLOGGER_EMAIL
+        metaData.mail = this.serverConfig.BLOGGER_EMAIL;
       }
       if (!metaData.link && this.serverConfig.SITE_URL) {
-        metaData.link = this.serverConfig.SITE_URL
+        metaData.link = this.serverConfig.SITE_URL;
       }
-      localStorage.setItem('twikoo', JSON.stringify(metaData))
-      app.$emit('initMeta')
+      localStorage.setItem("twikoo", JSON.stringify(metaData));
+      app.$emit("initMeta");
     },
-    onPageSizeChange (newPageSize) {
-      this.pageSize = newPageSize
-      this.getComments()
+    onPageSizeChange(newPageSize) {
+      this.pageSize = newPageSize;
+      this.getComments();
     },
-    switchPage (e) {
-      this.currentPage = e
-      this.getComments()
+    switchPage(e) {
+      this.currentPage = e;
+      this.getComments();
     },
-    handleView (comment) {
-      window.open(`${comment.url}#${comment._id}`)
+    handleView(comment) {
+      window.open(`${comment.url}#${comment._id}`);
     },
-    async handleDelete (comment) {
-      if (!confirm(t('ADMIN_COMMENT_DELETE_CONFIRM'))) return
-      this.loading = true
-      await call(this.$tcb, 'COMMENT_DELETE_FOR_ADMIN', {
-        id: comment._id
-      })
-      await this.getComments()
-      this.loading = false
-    },
-    handleSpam (comment, isSpam) {
-      this.setComment(comment, { isSpam })
-    },
-    handleTop (comment, top) {
-      this.setComment(comment, { top })
-    },
-    async setComment (comment, set) {
-      this.loading = true
-      await call(this.$tcb, 'COMMENT_SET_FOR_ADMIN', {
+    async handleDelete(comment) {
+      if (!confirm(t("ADMIN_COMMENT_DELETE_CONFIRM"))) return;
+      this.loading = true;
+      await call(this.$tcb, "COMMENT_DELETE_FOR_ADMIN", {
         id: comment._id,
-        set
-      })
-      await this.getComments()
-      this.loading = false
+      });
+      await this.getComments();
+      this.loading = false;
     },
-    highlightCode () {
-      if (this.serverConfig.HIGHLIGHT === 'true') {
-        renderCode(this.$refs['comment-list'], this.serverConfig.HIGHLIGHT_THEME, this.serverConfig.HIGHLIGHT_PLUGIN)
+    handleSpam(comment, isSpam) {
+      this.setComment(comment, { isSpam });
+    },
+    handleTop(comment, top) {
+      this.setComment(comment, { top });
+    },
+    async setComment(comment, set) {
+      this.loading = true;
+      await call(this.$tcb, "COMMENT_SET_FOR_ADMIN", {
+        id: comment._id,
+        set,
+      });
+      await this.getComments();
+      this.loading = false;
+    },
+    highlightCode() {
+      if (this.serverConfig.HIGHLIGHT === "true") {
+        renderCode(
+          this.$refs["comment-list"],
+          this.serverConfig.HIGHLIGHT_THEME,
+          this.serverConfig.HIGHLIGHT_PLUGIN
+        );
       }
-    }
+    },
   },
-  async mounted () {
-    await Promise.all([
-      this.getConfig(),
-      this.getComments()
-    ])
-    this.highlightCode()
-  }
-}
+  async mounted() {
+    await Promise.all([this.getConfig(), this.getComments()]);
+    this.highlightCode();
+  },
+};
 </script>
 
 <style>
@@ -216,7 +281,7 @@ export default {
   padding: 0 0.5em;
   color: #ffffff;
   background: none;
-  border: 1px solid rgba(144,147,153,0.31);
+  border: 1px solid rgba(144, 147, 153, 0.31);
   border-radius: 4px;
   position: relative;
   -moz-appearance: none;
@@ -253,6 +318,6 @@ export default {
 .tk-admin-actions {
   display: flex;
   margin-bottom: 1em;
-  border-bottom: 1px solid rgba(255,255,255,0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
 }
 </style>

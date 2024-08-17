@@ -3,7 +3,7 @@ import timeago from './timeago'
 import marked from './marked'
 import renderCode from './highlight'
 import { isUrl, call } from './api'
-import { normalizeMail, isQQ, getQQAvatar } from './avatar'
+import { normalizeMail, isQQ, getQQAvatar, getCookie } from './avatar'
 import { initOwoEmotions, initMarkedOwo } from './emotion'
 
 const isNotSet = (option) => {
@@ -84,7 +84,7 @@ const getUserAgent = async () => {
         ua = ua.replace(/Mac OS X 10_[0-9]+_[0-9]+/i, `Mac OS X ${correctVersion}`)
       }
     }
-  } catch (e) {}
+  } catch (e) { }
   return ua
 }
 
@@ -207,5 +207,6 @@ export {
   readAsText,
   renderLinks,
   renderMath,
-  blobToDataURL
+  blobToDataURL,
+  getCookie
 }

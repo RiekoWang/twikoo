@@ -7,28 +7,28 @@
 </template>
 
 <script>
-import TkComments from './components/TkComments.vue'
-import TkFooter from './components/TkFooter.vue'
-import TkAdmin from './components/TkAdmin.vue'
+import TkComments from "./components/TkComments.vue";
+import TkFooter from "./components/TkFooter.vue";
+import TkAdmin from "./components/TkAdmin.vue";
 
 export default {
   components: {
     TkComments,
     TkFooter,
-    TkAdmin
+    TkAdmin,
   },
-  data () {
+  data() {
     return {
       showAdmin: false,
-      showAdminEntry: false
-    }
+      showAdminEntry: false,
+    };
   },
   methods: {
-    onShowAdminEntry (showAdminEntry) {
-      this.showAdminEntry = showAdminEntry
-    }
-  }
-}
+    onShowAdminEntry(showAdminEntry) {
+      this.showAdminEntry = showAdminEntry;
+    },
+  },
+};
 </script>
 
 <style>
@@ -50,10 +50,10 @@ export default {
   transition: all 0.5s;
 }
 .tk-expand:hover {
-  background-color: rgba(0,0,0,0.13);
+  background-color: rgba(0, 0, 0, 0.13);
 }
 .tk-expand:active {
-  background-color: rgba(0,0,0,0.19);
+  background-color: rgba(0, 0, 0, 0.19);
 }
 .tk-content img {
   max-width: 300px;
@@ -71,41 +71,46 @@ export default {
 .twikoo .el-textarea__inner {
   color: currentColor;
   background-color: transparent;
-  border-color: rgba(144,147,153,0.31);
+  border-color: rgba(144, 147, 153, 0.31);
 }
 .twikoo .el-input__inner:hover,
 .twikoo .el-textarea__inner:hover {
-  border-color: rgba(144,147,153,0.50);
+  border-color: rgba(144, 147, 153, 0.5);
+}
+.dark .twikoo .el-input__inner:focus,
+.dark .twikoo .el-textarea__inner:focus {
+  border-color: #d4d4d8;
 }
 .twikoo .el-input__inner:focus,
 .twikoo .el-textarea__inner:focus {
-  border-color: #409eff;
+  /* border-color: #409eff; */
+  border-color: #71717a;
 }
 .twikoo .el-input-group__append,
 .twikoo .el-input-group__prepend {
   color: currentColor;
   background-clip: padding-box;
-  background-color: rgba(144,147,153,0.13);
-  border-color: rgba(144,147,153,0.31);
+  background-color: rgba(144, 147, 153, 0.13);
+  border-color: rgba(144, 147, 153, 0.31);
 }
 .twikoo .el-button:not(.el-button--primary):not(.el-button--text) {
   color: currentColor;
-  background-color: rgba(144,147,153,0.063);
-  border-color: rgba(144,147,153,0.31);
+  background-color: rgba(144, 147, 153, 0.063);
+  border-color: rgba(144, 147, 153, 0.31);
 }
 .twikoo .el-button:not(.el-button--primary):not(.el-button--text):active,
 .twikoo .el-button:not(.el-button--primary):not(.el-button--text):focus,
 .twikoo .el-button:not(.el-button--primary):not(.el-button--text):hover {
   color: #409eff;
-  background-color: rgba(64,158,255,0.063);
-  border-color: rgba(64,158,255,0.50);
+  background-color: rgba(64, 158, 255, 0.063);
+  border-color: rgba(64, 158, 255, 0.5);
 }
 .twikoo .el-button--primary.is-disabled,
 .twikoo .el-button--primary.is-disabled:active,
 .twikoo .el-button--primary.is-disabled:focus,
 .twikoo .el-button--primary.is-disabled:hover {
-  color: rgba(255,255,255,0.63);
-  background-color: rgba(64,158,255,0.50);
+  color: rgba(255, 255, 255, 0.63);
+  background-color: rgba(64, 158, 255, 0.5);
   border-color: transparent;
 }
 .twikoo .el-loading-mask {
