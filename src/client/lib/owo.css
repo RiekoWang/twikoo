@@ -30,10 +30,11 @@
   max-width: 500px;
   color: #4a4a4a;
   background-color: #ffffff;
-  border: 1px solid rgba(144,147,153,0.31);
+  border: 1px solid rgba(144, 147, 153, 0.31);
   top: 2em;
   border-radius: 0 4px 4px;
   z-index: 1000;
+  width: 500px;
 }
 
 .night .OwO .OwO-body,
@@ -66,14 +67,15 @@
   font-size: 12px;
   line-height: 14px;
   cursor: pointer;
-  -webkit-transition: .3s;
-  transition: .3s;
+  -webkit-transition: 0.3s;
+  transition: 0.3s;
   text-align: center;
 }
 
 .OwO .OwO-body .OwO-items .OwO-item:hover {
-  background-color: rgba(144,147,153,0.13);
-  box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
+  background-color: rgba(144, 147, 153, 0.13);
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2),
+    0 1px 5px 0 rgba(0, 0, 0, 0.12);
 }
 
 .OwO .OwO-body .OwO-items-emoji .OwO-item {
@@ -110,7 +112,6 @@
   }
 }
 
-
 .OwO .OwO-body .OwO-items-image .OwO-item img {
   max-width: 100%;
 }
@@ -121,7 +122,7 @@
 
 .OwO .OwO-body .OwO-bar {
   width: 100%;
-  border-top: 1px solid rgba(144,147,153,0.31);
+  border-top: 1px solid rgba(144, 147, 153, 0.31);
   border-radius: 0 0 4px 4px;
 }
 
@@ -146,11 +147,19 @@
 }
 
 .OwO .OwO-body .OwO-bar .OwO-packages li:hover {
-  background-color: rgba(144,147,153,0.13);
+  background-color: rgba(144, 147, 153, 0.13);
 }
 
 .OwO .OwO-body .OwO-bar .OwO-packages .OwO-package-active {
-  background-color: rgba(144,147,153,0.13);
-  -webkit-transition: .3s;
-  transition: .3s;
+  background-color: rgba(144, 147, 153, 0.13);
+  -webkit-transition: 0.3s;
+  transition: 0.3s;
+}
+@media screen and (max-width: 768px) {
+  .OwO .OwO-body {
+    width: 300px;
+  }
+  .tk-row-actions-start {
+    top: -124px;
+  }
 }

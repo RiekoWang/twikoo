@@ -70,9 +70,16 @@ export default {
 .twikoo .el-input__inner,
 .twikoo .el-textarea__inner {
   color: currentColor;
-  background-color: transparent;
+  /* background-color: transparent; */
   border-color: rgba(144, 147, 153, 0.31);
+  background: #f7f7f9;
 }
+
+.dark .twikoo .el-input__inner,
+.dark .twikoo .el-textarea__inner {
+  background: #21232a !important;
+}
+
 .twikoo .el-input__inner:hover,
 .twikoo .el-textarea__inner:hover {
   border-color: rgba(144, 147, 153, 0.5);
@@ -94,23 +101,29 @@ export default {
   border-color: rgba(144, 147, 153, 0.31);
 }
 .twikoo .el-button:not(.el-button--primary):not(.el-button--text) {
-  color: currentColor;
+  /* color: currentColor;
   background-color: rgba(144, 147, 153, 0.063);
-  border-color: rgba(144, 147, 153, 0.31);
+  border-color: rgba(144, 147, 153, 0.31); */
+
+  background-color: #a1a1aa;
+  /* color: #fff; */
 }
 .twikoo .el-button:not(.el-button--primary):not(.el-button--text):active,
 .twikoo .el-button:not(.el-button--primary):not(.el-button--text):focus,
 .twikoo .el-button:not(.el-button--primary):not(.el-button--text):hover {
-  color: #409eff;
+  background-color: #a1a1aa;
+  /* color: #fff; */
+
+  /* color: #409eff;
   background-color: rgba(64, 158, 255, 0.063);
-  border-color: rgba(64, 158, 255, 0.5);
+  border-color: rgba(64, 158, 255, 0.5); */
 }
-.twikoo .el-button--primary.is-disabled,
-.twikoo .el-button--primary.is-disabled:active,
-.twikoo .el-button--primary.is-disabled:focus,
-.twikoo .el-button--primary.is-disabled:hover {
-  color: rgba(255, 255, 255, 0.63);
-  background-color: rgba(64, 158, 255, 0.5);
+.twikoo .tk-comments .el-button--primary.is-disabled,
+.twikoo .tk-comments .el-button--primary.is-disabled:active,
+.twikoo .tk-comments .el-button--primary.is-disabled:focus,
+.twikoo .tk-comments .el-button--primary.is-disabled:hover {
+  color: #a1a1aa;
+  background-color: #e4e4e7;
   border-color: transparent;
 }
 .twikoo .el-loading-mask {
@@ -127,5 +140,19 @@ export default {
   border-left: 0.5rem solid #e7c000;
   color: #6b5900;
   align-self: stretch;
+}
+
+.twikoo .tk-comments .el-button--primary {
+  color: #fff;
+  box-shadow: 0 0 12px 4px rgba(0, 0, 0, 0.05);
+  transition: 0.3s;
+  width: 5rem;
+  position: absolute;
+  top: -48px;
+  right: 0;
+  margin-left: 0.5rem;
+  height: 32px;
+  border: none;
+  background-color: #52525b;
 }
 </style>

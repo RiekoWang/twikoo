@@ -3,6 +3,7 @@
     <div class="tk-row">
       <tk-avatar :config="config" :mail="mail" :nick="nick" />
       <div class="tk-col">
+        <!-- <div class="w-ddd"> -->
         <el-input
           class="tk-input"
           type="textarea"
@@ -12,10 +13,19 @@
           :placeholder="commentPlaceholder"
           :autosize="{ minRows: 3 }"
           :maxlength="maxLength"
-          textareaStyle="min-height: 130px"
           @input="onCommentInput"
           @keyup.enter.native="onEnterKeyUp($event)"
         />
+        <!-- textareaStyle="min-height: 130px" -->
+        <!-- <div
+            class="tk-submit-action-icon OwO"
+            v-show="config.SHOW_EMOTION === 'true'"
+            v-html="iconEmotion"
+            v-clickoutside="closeOwo"
+            ref="owo"
+          ></div> -->
+        <!-- </div> -->
+
         <tk-meta-input
           :nick="nick"
           :mail="mail"
@@ -58,14 +68,14 @@
         rel="noopener noreferrer"
         v-html="iconMarkdown"
       ></a> -->
-      <!-- <el-button
+      <el-button
         class="tk-cancel"
         v-if="!!replyId"
         size="small"
         @click="cancel"
         >{{ t("SUBMIT_CANCEL") }}</el-button
       >
-      <el-button class="tk-preview" size="small" @click="preview">{{
+      <!-- <el-button class="tk-preview" size="small" @click="preview">{{
         t("SUBMIT_PREVIEW")
       }}</el-button> -->
       <el-button
@@ -90,12 +100,12 @@
 </template>
 
 <script>
-import iconMarkdown from '@fortawesome/fontawesome-free/svgs/brands/markdown.svg'
-import iconEmotion from '@fortawesome/fontawesome-free/svgs/regular/laugh.svg'
-import iconImage from '@fortawesome/fontawesome-free/svgs/regular/image.svg'
-import Clickoutside from 'element-ui/src/utils/clickoutside'
-import TkAvatar from './TkAvatar.vue'
-import TkMetaInput from './TkMetaInput.vue'
+import iconMarkdown from "@fortawesome/fontawesome-free/svgs/brands/markdown.svg";
+import iconEmotion from "@fortawesome/fontawesome-free/svgs/regular/laugh.svg";
+import iconImage from "@fortawesome/fontawesome-free/svgs/regular/image.svg";
+import Clickoutside from "element-ui/src/utils/clickoutside";
+import TkAvatar from "./TkAvatar.vue";
+import TkMetaInput from "./TkMetaInput.vue";
 import {
   marked,
   call,
@@ -109,173 +119,173 @@ import {
   getUrl,
   getHref,
   blobToDataURL,
-  getUserAgent
-} from '../../utils'
-import OwO from '../../lib/owo'
+  getUserAgent,
+} from "../../utils";
+import OwO from "../../lib/owo";
 
 const imageTypes = [
-  'apng',
-  'bmp',
-  'gif',
-  'jpeg',
-  'jpg',
-  'png',
-  'svg',
-  'tif',
-  'tiff',
-  'webp'
-]
+  "apng",
+  "bmp",
+  "gif",
+  "jpeg",
+  "jpg",
+  "png",
+  "svg",
+  "tif",
+  "tiff",
+  "webp",
+];
 
 export default {
   components: {
     TkAvatar,
-    TkMetaInput
+    TkMetaInput,
   },
   directives: {
-    Clickoutside
+    Clickoutside,
   },
   props: {
     replyId: String,
     pid: String,
-    config: Object
+    config: Object,
   },
-  data () {
+  data() {
     return {
       isSending: false,
       isPreviewing: false,
       isMetaValid: false,
-      errorMessage: '',
+      errorMessage: "",
       owo: null,
-      comment: '',
-      commentHtml: '',
-      nick: '',
-      mail: '',
-      link: '',
+      comment: "",
+      commentHtml: "",
+      nick: "",
+      mail: "",
+      link: "",
       turnstileLoad: null,
       iconMarkdown,
       iconEmotion,
-      iconImage
-    }
+      iconImage,
+    };
   },
   computed: {
-    canSend () {
-      return !this.isSending && !!this.isMetaValid && !!this.comment.trim()
+    canSend() {
+      return !this.isSending && !!this.isMetaValid && !!this.comment.trim();
     },
-    textarea () {
-      return this.$refs.textarea ? this.$refs.textarea.$refs.textarea : null
+    textarea() {
+      return this.$refs.textarea ? this.$refs.textarea.$refs.textarea : null;
     },
-    commentPlaceholder () {
+    commentPlaceholder() {
       let ph =
-        this.$twikoo.placeholder || this.config.COMMENT_PLACEHOLDER || ''
-      ph = ph.replace(/<br>/g, '\n')
-      return ph
+        this.$twikoo.placeholder || this.config.COMMENT_PLACEHOLDER || "";
+      ph = ph.replace(/<br>/g, "\n");
+      return ph;
     },
-    maxLength () {
-      let limitLength = parseInt(this.config.LIMIT_LENGTH)
-      if (Number.isNaN(limitLength)) limitLength = 500
-      return limitLength > 0 ? limitLength : null
-    }
+    maxLength() {
+      let limitLength = parseInt(this.config.LIMIT_LENGTH);
+      if (Number.isNaN(limitLength)) limitLength = 500;
+      return limitLength > 0 ? limitLength : null;
+    },
   },
   methods: {
     t,
-    initDraft () {
-      const draft = localStorage.getItem('twikoo-draft')
+    initDraft() {
+      const draft = localStorage.getItem("twikoo-draft");
       if (!this.comment && draft) {
-        this.comment = draft
+        this.comment = draft;
       }
     },
-    saveDraft () {
-      localStorage.setItem('twikoo-draft', this.comment)
+    saveDraft() {
+      localStorage.setItem("twikoo-draft", this.comment);
     },
-    async initOwo () {
-      if (this.config.SHOW_EMOTION === 'true') {
+    async initOwo() {
+      if (this.config.SHOW_EMOTION === "true") {
         const odata = await initOwoEmotions(
-          this.config.EMOTION_CDN || 'https://owo.imaegoo.com/owo.json'
-        )
+          this.config.EMOTION_CDN || "https://owo.imaegoo.com/owo.json"
+        );
         this.owo = new OwO({
           logo: iconEmotion, // OwO button text, default: `OωO表情`
           container: this.$refs.owo, // OwO container, default: `document.getElementsByClassName('OwO')[0]`
           target: this.textarea, // OwO target input or textarea, default: `document.getElementsByTagName('textarea')[0]`
           odata,
-          position: 'down', // OwO body position, default: `down`
-          maxHeight: '250px' // OwO body max-height, default: `250px`
-        })
-        marked.setOptions({ odata: initMarkedOwo(odata) })
+          position: "down", // OwO body position, default: `down`
+          maxHeight: "250px", // OwO body max-height, default: `250px`
+        });
+        marked.setOptions({ odata: initMarkedOwo(odata) });
       }
     },
-    initTurnstile () {
-      if (!this.config.TURNSTILE_SITE_KEY) return
+    initTurnstile() {
+      if (!this.config.TURNSTILE_SITE_KEY) return;
       if (window.turnstile) {
-        this.turnstileLoad = Promise.resolve()
-        return
+        this.turnstileLoad = Promise.resolve();
+        return;
       }
       this.turnstileLoad = new Promise((resolve, reject) => {
-        const scriptEl = document.createElement('script')
+        const scriptEl = document.createElement("script");
         scriptEl.src =
-          'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
-        scriptEl.onload = resolve
-        scriptEl.onerror = reject
-        this.$refs['turnstile-container'].appendChild(scriptEl)
-      })
+          "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+        scriptEl.onload = resolve;
+        scriptEl.onerror = reject;
+        this.$refs["turnstile-container"].appendChild(scriptEl);
+      });
     },
-    getTurnstileToken () {
+    getTurnstileToken() {
       return new Promise((resolve, reject) => {
         this.turnstileLoad.then(() => {
           const widgetId = window.turnstile.render(this.$refs.turnstile, {
             sitekey: this.config.TURNSTILE_SITE_KEY,
             callback: (token) => {
-              resolve(token)
+              resolve(token);
               setTimeout(() => {
-                window.turnstile.remove(widgetId)
-              }, 5000)
+                window.turnstile.remove(widgetId);
+              }, 5000);
             },
-            'error-callback': reject
-          })
-        })
-      })
+            "error-callback": reject,
+          });
+        });
+      });
     },
-    onMetaUpdate (updates) {
-      this.nick = updates.meta.nick
-      this.mail = updates.meta.mail
-      this.link = updates.meta.link
-      this.isMetaValid = updates.valid
+    onMetaUpdate(updates) {
+      this.nick = updates.meta.nick;
+      this.mail = updates.meta.mail;
+      this.link = updates.meta.link;
+      this.isMetaValid = updates.valid;
     },
-    cancel () {
-      this.$emit('cancel')
+    cancel() {
+      this.$emit("cancel");
     },
-    onCommentInput () {
-      this.saveDraft()
-      this.updatePreview()
+    onCommentInput() {
+      this.saveDraft();
+      this.updatePreview();
     },
-    preview () {
-      this.isPreviewing = !this.isPreviewing
-      this.updatePreview()
+    preview() {
+      this.isPreviewing = !this.isPreviewing;
+      this.updatePreview();
     },
-    updatePreview () {
+    updatePreview() {
       if (this.isPreviewing) {
-        this.commentHtml = marked(this.comment)
+        this.commentHtml = marked(this.comment);
         this.$nextTick(() => {
-          renderLinks(this.$refs['comment-preview'])
-          renderMath(this.$refs['comment-preview'], this.$twikoo.katex)
-          if (this.config.HIGHLIGHT === 'true') {
+          renderLinks(this.$refs["comment-preview"]);
+          renderMath(this.$refs["comment-preview"], this.$twikoo.katex);
+          if (this.config.HIGHLIGHT === "true") {
             renderCode(
-              this.$refs['comment-preview'],
+              this.$refs["comment-preview"],
               this.config.HIGHLIGHT_THEME,
               this.config.HIGHLIGHT_PLUGIN
-            )
+            );
           }
-        })
+        });
       }
     },
-    async send () {
-      this.isSending = true
+    async send() {
+      this.isSending = true;
       try {
         if (
           this.comment.match(
-            new RegExp(`!\\[${t('IMAGE_UPLOAD_PLACEHOLDER')}.+\\]\\(\\)`)
+            new RegExp(`!\\[${t("IMAGE_UPLOAD_PLACEHOLDER")}.+\\]\\(\\)`)
           )
         ) {
-          throw new Error(t('IMAGE_UPLOAD_PLEASE_WAIT'))
+          throw new Error(t("IMAGE_UPLOAD_PLEASE_WAIT"));
         }
         const comment = {
           nick: this.nick,
@@ -286,132 +296,132 @@ export default {
           href: getHref(this.$twikoo.href),
           comment: marked(this.comment),
           pid: this.pid ? this.pid : this.replyId,
-          rid: this.replyId
-        }
+          rid: this.replyId,
+        };
         if (this.config.TURNSTILE_SITE_KEY) {
-          comment.turnstileToken = await this.getTurnstileToken()
+          comment.turnstileToken = await this.getTurnstileToken();
         }
-        const sendResult = await call(this.$tcb, 'COMMENT_SUBMIT', comment)
+        const sendResult = await call(this.$tcb, "COMMENT_SUBMIT", comment);
         if (sendResult && sendResult.result && sendResult.result.id) {
-          this.comment = ''
-          this.errorMessage = ''
-          this.$emit('load')
-          this.saveDraft()
+          this.comment = "";
+          this.errorMessage = "";
+          this.$emit("load");
+          this.saveDraft();
         } else {
-          throw new Error(sendResult.result.message)
+          throw new Error(sendResult.result.message);
         }
       } catch (e) {
-        logger.error('评论失败', e)
-        this.errorMessage = `${t('COMMENT_FAILED')}: ${e && e.message}`
+        logger.error("评论失败", e);
+        this.errorMessage = `${t("COMMENT_FAILED")}: ${e && e.message}`;
       } finally {
-        this.isSending = false
+        this.isSending = false;
       }
     },
-    addEventListener () {
+    addEventListener() {
       if (this.textarea) {
-        this.textarea.addEventListener('paste', this.onPaste)
+        this.textarea.addEventListener("paste", this.onPaste);
       }
     },
-    onBgImgChange () {
+    onBgImgChange() {
       if (this.config.COMMENT_BG_IMG && this.textarea) {
         this.textarea.style[
-          'background-image'
-        ] = `url("${this.config.COMMENT_BG_IMG}")`
+          "background-image"
+        ] = `url("${this.config.COMMENT_BG_IMG}")`;
       }
     },
-    onEnterKeyUp (event) {
+    onEnterKeyUp(event) {
       // 按 Ctrl + Enter / Command + Enter 发送
       if ((event.ctrlKey || event.metaKey) && this.canSend) {
-        this.send()
-        event.preventDefault()
+        this.send();
+        event.preventDefault();
       }
     },
-    closeOwo () {
-      if (this.owo && this.owo.container.classList.contains('OwO-open')) {
-        this.owo.toggle()
+    closeOwo() {
+      if (this.owo && this.owo.container.classList.contains("OwO-open")) {
+        this.owo.toggle();
       }
     },
-    openSelectImage () {
-      this.$refs.inputFile.click()
+    openSelectImage() {
+      this.$refs.inputFile.click();
     },
-    onSelectImage () {
-      const photo = this.$refs.inputFile.files[0]
-      this.parseAndUploadPhoto(photo)
+    onSelectImage() {
+      const photo = this.$refs.inputFile.files[0];
+      this.parseAndUploadPhoto(photo);
     },
-    onPaste (e) {
-      if (!e.clipboardData) return
-      let photo
+    onPaste(e) {
+      if (!e.clipboardData) return;
+      let photo;
       if (e.clipboardData.files[0]) {
-        photo = e.clipboardData.files[0]
+        photo = e.clipboardData.files[0];
       } else if (
         e.clipboardData.items[0] &&
         e.clipboardData.items[0].getAsFile()
       ) {
-        photo = e.clipboardData.items[0].getAsFile()
+        photo = e.clipboardData.items[0].getAsFile();
       }
-      this.parseAndUploadPhoto(photo)
+      this.parseAndUploadPhoto(photo);
     },
-    parseAndUploadPhoto (photo) {
-      if (!photo || this.config.SHOW_IMAGE !== 'true') return
-      const nameSplit = photo.name.split('.')
-      const fileType = nameSplit.length > 1 ? nameSplit.pop() : ''
-      if (imageTypes.indexOf(fileType.toLowerCase()) === -1) return
-      const userId = this.getUserId()
-      const fileIndex = `${Date.now()}-${userId}`
-      const fileName = nameSplit.join('.')
-      this.paste(this.getImagePlaceholder(fileIndex, fileType))
-      const imageCdn = this.config.IMAGE_CDN
-      if (this.$tcb && (!imageCdn || imageCdn === 'qcloud')) {
-        this.uploadPhotoToQcloud(fileIndex, fileName, fileType, photo)
+    parseAndUploadPhoto(photo) {
+      if (!photo || this.config.SHOW_IMAGE !== "true") return;
+      const nameSplit = photo.name.split(".");
+      const fileType = nameSplit.length > 1 ? nameSplit.pop() : "";
+      if (imageTypes.indexOf(fileType.toLowerCase()) === -1) return;
+      const userId = this.getUserId();
+      const fileIndex = `${Date.now()}-${userId}`;
+      const fileName = nameSplit.join(".");
+      this.paste(this.getImagePlaceholder(fileIndex, fileType));
+      const imageCdn = this.config.IMAGE_CDN;
+      if (this.$tcb && (!imageCdn || imageCdn === "qcloud")) {
+        this.uploadPhotoToQcloud(fileIndex, fileName, fileType, photo);
       } else if (imageCdn) {
-        this.uploadPhotoToThirdParty(fileIndex, fileName, fileType, photo)
+        this.uploadPhotoToThirdParty(fileIndex, fileName, fileType, photo);
       } else {
         this.uploadFailed(
           fileIndex,
           fileType,
-          t('IMAGE_UPLOAD_FAILED_NO_CONF')
-        )
+          t("IMAGE_UPLOAD_FAILED_NO_CONF")
+        );
       }
     },
-    getUserId () {
+    getUserId() {
       if (this.$tcb) {
-        return this.$tcb.auth.currentUser.uid
+        return this.$tcb.auth.currentUser.uid;
       } else {
-        return localStorage.getItem('twikoo-access-token')
+        return localStorage.getItem("twikoo-access-token");
       }
     },
-    async uploadPhotoToQcloud (fileIndex, fileName, fileType, photo) {
+    async uploadPhotoToQcloud(fileIndex, fileName, fileType, photo) {
       try {
         const uploadResult = await this.$tcb.app.uploadFile({
           cloudPath: `tk-img/${fileIndex}.${fileType}`,
-          filePath: photo
-        })
+          filePath: photo,
+        });
         if (uploadResult.fileID) {
           const tempUrlResult = await this.$tcb.app.getTempFileURL({
-            fileList: [uploadResult.fileID]
-          })
-          const tempFileUrl = tempUrlResult.fileList[0].tempFileURL
-          this.uploadCompleted(fileIndex, fileName, fileType, tempFileUrl)
+            fileList: [uploadResult.fileID],
+          });
+          const tempFileUrl = tempUrlResult.fileList[0].tempFileURL;
+          this.uploadCompleted(fileIndex, fileName, fileType, tempFileUrl);
         }
       } catch (e) {
-        console.error(e)
-        this.uploadFailed(fileIndex, fileType, e.message)
+        console.error(e);
+        this.uploadFailed(fileIndex, fileType, e.message);
       }
     },
-    async uploadPhotoToThirdParty (fileIndex, fileName, fileType, photo) {
+    async uploadPhotoToThirdParty(fileIndex, fileName, fileType, photo) {
       try {
-        let smmsImageDuplicateCheck
-        const { result: uploadResult } = await call(this.$tcb, 'UPLOAD_IMAGE', {
+        let smmsImageDuplicateCheck;
+        const { result: uploadResult } = await call(this.$tcb, "UPLOAD_IMAGE", {
           fileName: `${fileIndex}.${fileType}`,
-          photo: await blobToDataURL(photo)
-        })
+          photo: await blobToDataURL(photo),
+        });
         if (uploadResult.data) {
           this.uploadCompleted(
             fileIndex,
             fileName,
             fileType,
             uploadResult.data.url
-          )
+          );
         } else if (
           uploadResult.code === 1040 &&
           uploadResult.err &&
@@ -419,85 +429,85 @@ export default {
             /this image exists at: (http[^ ]+)/
           ))
         ) {
-          console.warn(uploadResult)
+          console.warn(uploadResult);
           this.uploadCompleted(
             fileIndex,
             fileName,
             fileType,
             smmsImageDuplicateCheck[1]
-          )
+          );
         } else {
-          console.error(uploadResult)
-          this.uploadFailed(fileIndex, fileType, uploadResult.err)
+          console.error(uploadResult);
+          this.uploadFailed(fileIndex, fileType, uploadResult.err);
         }
       } catch (e) {
-        console.error(e)
-        this.uploadFailed(fileIndex, fileType, e.message)
+        console.error(e);
+        this.uploadFailed(fileIndex, fileType, e.message);
       }
     },
-    uploadCompleted (fileIndex, fileName, fileType, fileUrl) {
-      fileName = fileName.replace(/[[\]]/g, '_')
+    uploadCompleted(fileIndex, fileName, fileType, fileUrl) {
+      fileName = fileName.replace(/[[\]]/g, "_");
       this.comment = this.comment.replace(
         this.getImagePlaceholder(fileIndex, fileType),
         `![${fileName}](${fileUrl})`
-      )
-      this.$refs.inputFile.value = ''
+      );
+      this.$refs.inputFile.value = "";
     },
-    uploadFailed (fileIndex, fileType, reason) {
+    uploadFailed(fileIndex, fileType, reason) {
       this.comment = this.comment.replace(
         this.getImagePlaceholder(fileIndex, fileType),
-        `_${t('IMAGE_UPLOAD_FAILED')}: ${reason}_`
-      )
-      this.$refs.inputFile.value = ''
+        `_${t("IMAGE_UPLOAD_FAILED")}: ${reason}_`
+      );
+      this.$refs.inputFile.value = "";
     },
-    paste (text) {
+    paste(text) {
       if (document.selection) {
-        document.selection.createRange().text = text
+        document.selection.createRange().text = text;
       } else if (
         this.textarea.selectionStart ||
         this.textarea.selectionStart === 0
       ) {
-        const n = this.textarea.selectionStart
-        const r = this.textarea.selectionEnd
+        const n = this.textarea.selectionStart;
+        const r = this.textarea.selectionEnd;
         this.comment =
           this.comment.substring(0, n) +
           text +
-          this.comment.substring(r, this.comment.length)
-        this.textarea.selectionStart = n + text.length
-        this.textarea.selectionEnd = n + text.length
+          this.comment.substring(r, this.comment.length);
+        this.textarea.selectionStart = n + text.length;
+        this.textarea.selectionEnd = n + text.length;
       } else {
-        this.comment += text
+        this.comment += text;
       }
     },
-    getImagePlaceholder (fileIndex, fileType) {
-      return `![${t('IMAGE_UPLOAD_PLACEHOLDER')} ${fileIndex}.${fileType}]()`
-    }
+    getImagePlaceholder(fileIndex, fileType) {
+      return `![${t("IMAGE_UPLOAD_PLACEHOLDER")} ${fileIndex}.${fileType}]()`;
+    },
   },
-  mounted () {
+  mounted() {
     if (this.pid) {
-      this.$refs['tk-submit'].scrollIntoView({
-        behavior: 'instant',
-        block: 'center'
-      })
+      this.$refs["tk-submit"].scrollIntoView({
+        behavior: "instant",
+        block: "center",
+      });
     }
-    this.initDraft()
-    this.initOwo()
-    this.addEventListener()
-    this.onBgImgChange()
-    this.initTurnstile()
+    this.initDraft();
+    this.initOwo();
+    this.addEventListener();
+    this.onBgImgChange();
+    this.initTurnstile();
   },
   watch: {
-    'config.SHOW_EMOTION': function () {
-      this.initOwo()
+    "config.SHOW_EMOTION": function () {
+      this.initOwo();
     },
-    'config.COMMENT_BG_IMG': function () {
-      this.onBgImgChange()
+    "config.COMMENT_BG_IMG": function () {
+      this.onBgImgChange();
     },
-    'config.TURNSTILE_SITE_KEY': function () {
-      this.initTurnstile()
-    }
-  }
-}
+    "config.TURNSTILE_SITE_KEY": function () {
+      this.initTurnstile();
+    },
+  },
+};
 </script>
 
 <style>
@@ -516,7 +526,19 @@ export default {
 }
 .tk-meta-input {
   margin-top: 0.5rem;
+  width: calc(100% - 5.5rem);
 }
+.tk-comments .el-textarea textarea.el-textarea__inner {
+  border-radius: 12px !important;
+  min-height: 100px !important;
+  padding: 16px 16px 40px 16px !important;
+  /* border: 1px solid #c5aa65 !important; */
+  /* box-shadow: none !important; */
+  /* font-size: 16px !important; */
+  /* min-height: 90px !important; */
+  /* height: 90px !important; */
+}
+
 .tk-row.actions {
   position: relative;
   margin-top: 1rem;
@@ -529,6 +551,9 @@ export default {
   flex: 1;
   display: flex;
   align-items: center;
+  position: absolute;
+  top: -84px;
+  left: 17px;
 }
 .tk-submit-action-icon {
   align-self: center;
@@ -582,6 +607,21 @@ export default {
 }
 .tk-fade-in {
   animation: tkFadeIn 0.3s;
+}
+
+.tk-main .tk-submit .tk-cancel {
+  width: 100%;
+  color: #fff;
+  font-size: 12px;
+  /* box-shadow: 0 0 12px 4px rgba(0, 0, 0, 0.05); */
+  /* transition: 0.3s; */
+  height: 32px;
+  border: none;
+  background: transparent !important;
+  /* background-color: #52525b; */
+}
+.tk-main .tk-submit .tk-cancel span {
+  margin-left: -3.5rem;
 }
 @keyframes tkFadeIn {
   0% {

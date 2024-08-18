@@ -1,57 +1,68 @@
 <template>
   <div class="tk-action">
-    <a class="tk-action-link" :class="{ 'tk-liked': liked }" href="#" @click="onLike">
+    <a
+      class="tk-action-link"
+      :class="{ 'tk-liked': liked }"
+      href="#"
+      @click="onLike"
+    >
       <span class="tk-action-icon" v-html="iconLike"></span>
-      <span class="tk-action-icon tk-action-icon-solid" v-html="iconLikeSolid"></span>
+      <span
+        class="tk-action-icon tk-action-icon-solid"
+        v-html="iconLikeSolid"
+      ></span>
       <span class="tk-action-count">{{ likeCountStr }}</span>
     </a>
     <a class="tk-action-link" href="#" @click="onReply">
       <span class="tk-action-icon" v-html="iconComment"></span>
-      <span class="tk-action-icon tk-action-icon-solid" v-html="iconCommentSolid"></span>
+      <span
+        class="tk-action-icon tk-action-icon-solid"
+        v-html="iconCommentSolid"
+      ></span>
       <span class="tk-action-count">{{ repliesCountStr }}</span>
     </a>
   </div>
 </template>
 
 <script>
-import iconComment from '@fortawesome/fontawesome-free/svgs/regular/comment.svg'
-import iconCommentSolid from '@fortawesome/fontawesome-free/svgs/solid/comment.svg'
-import iconLike from '@fortawesome/fontawesome-free/svgs/regular/thumbs-up.svg'
-import iconLikeSolid from '@fortawesome/fontawesome-free/svgs/solid/thumbs-up.svg'
+import iconComment from "@fortawesome/fontawesome-free/svgs/regular/comment.svg";
+import iconCommentSolid from "@fortawesome/fontawesome-free/svgs/solid/comment.svg";
+import iconLike from "@fortawesome/fontawesome-free/svgs/regular/thumbs-up.svg";
+import iconLikeSolid from "@fortawesome/fontawesome-free/svgs/solid/thumbs-up.svg";
 
 export default {
-  data () {
+  data() {
     return {
       iconComment,
       iconCommentSolid,
       iconLike,
-      iconLikeSolid
-    }
+      iconLikeSolid,
+    };
   },
   props: {
     liked: Boolean,
     likeCount: Number,
-    repliesCount: Number
+    repliesCount: Number,
   },
   computed: {
-    likeCountStr () {
-      return this.likeCount > 0 ? `${this.likeCount}` : ''
+    likeCountStr() {
+      return this.likeCount > 0 ? `${this.likeCount}` : "";
     },
-    repliesCountStr () {
-      return this.repliesCount > 0 ? `${this.repliesCount}` : ''
-    }
+    repliesCountStr() {
+      return this.repliesCount > 0 ? `${this.repliesCount}` : "";
+    },
   },
   methods: {
-    onLike ($event) {
-      $event.preventDefault()
-      this.$emit('like')
+    onLike($event) {
+      $event.preventDefault();
+      this.$emit("like");
     },
-    onReply ($event) {
-      $event.preventDefault()
-      this.$emit('reply')
-    }
-  }
-}
+    onReply($event) {
+      $event.preventDefault();
+      this.$emit("reply");
+    },
+  },
+};
 </script>
 
 <style>
@@ -88,6 +99,28 @@ export default {
   height: 1em;
   width: 1em;
   line-height: 0;
-  color: #409eff;
+  color: #a1a1aa;
+}
+
+.tk-action-link {
+  color: #a1a1aa !important;
+  cursor: pointer;
+  -webkit-user-select: none;
+  padding: 0 12px 0 12px;
+  transition: 0.3s;
+  border-radius: 8px;
+  background-color: #21232a;
+  border: 1px solid #3d3d3f;
+}
+
+.light .tk-action-link {
+  color: #a1a1aa !important;
+  cursor: pointer;
+  background-color: #eeeef0;
+  border: 1px solid #eeeef0;
+}
+
+.light .tk-action-icon {
+  color: #8d8d94;
 }
 </style>
