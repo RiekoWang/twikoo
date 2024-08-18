@@ -146,7 +146,7 @@ export default {
   color: #fff;
   box-shadow: 0 0 12px 4px rgba(0, 0, 0, 0.05);
   transition: 0.3s;
-  width: 5rem;
+  width: 7rem;
   position: absolute;
   top: -48px;
   right: 0;
