@@ -70,9 +70,8 @@ export default {
 .twikoo .el-input__inner,
 .twikoo .el-textarea__inner {
   color: currentColor;
-  /* background-color: transparent; */
+  background-color: transparent;
   border-color: rgba(144, 147, 153, 0.31);
-  background: #f7f7f9;
 }
 
 .dark .twikoo .el-input__inner,

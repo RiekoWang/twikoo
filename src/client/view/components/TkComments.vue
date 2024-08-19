@@ -3,17 +3,18 @@
     <tk-submit @load="initComments" :config="config" />
     <div class="tk-comments-container" v-loading="loading">
       <!-- 去掉 -->
-      <!-- <div class="tk-comments-title">
+      <div class="tk-comments-title">
         <span class="tk-comments-count" :class="{ __hidden: !comments.length }">
           <span>{{ count }}</span>
           <span>{{ t('COMMENTS_COUNT_SUFFIX') }}</span>
         </span>
         <span>
           <span class="tk-icon __comments" v-if="!loading && !loadingMore" v-html="iconRefresh" @click="refresh"
-            ></span><span class="tk-icon __comments" v-if="showAdminEntry" v-html="iconSetting" @click="openAdmin"
+            ></span>
+            <span class="tk-icon __comments" v-if="showAdminEntry" v-html="iconSetting" @click="openAdmin"
             ></span>
         </span>
-      </div> -->
+      </div>
       <div class="tk-comments-no" v-if="!loading && !comments.length">
         <span v-if="!errorMessage">{{ t("COMMENTS_NO_COMMENTS") }}</span>
         <span v-if="errorMessage" class="tk-comments-error">{{
@@ -169,7 +170,7 @@ export default {
   width: 0.75em;
   line-height: 0;
   cursor: pointer;
-  color: #409eff;
+  color: #8d8d94;
 }
 .twikoo div.code-toolbar {
   position: relative;
