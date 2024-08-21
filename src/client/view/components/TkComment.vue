@@ -25,7 +25,7 @@
             target="_blank"
             rel="noopener noreferrer"
           >
-            <strong class="text-default-600 text-xl">{{ comment.nick }}</strong>
+            <strong style="color:#50a1ff" class="text-xl pr-2">{{ comment.nick }}</strong>
           </a>
           <span class="tk-tag tk-tag-green" v-if="comment.master">{{
             config.MASTER_TAG || t("COMMENT_MASTER_TAG")
